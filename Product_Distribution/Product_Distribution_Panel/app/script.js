@@ -1,16 +1,18 @@
 console.log("Hello Word");
 
 ZOHO.CREATOR.init().then(function(data){
-    fetchRecords();
-    updateCounts();
-    fetchChartData();
+    // fetchRecords();
+    // updateCounts();
+    // fetchChartData();
 
     var config1 = {
         appName : "product-distribution",
-        formName : "All_Outward_Quantity"
+        formName : "All_Outward_Quantity",
+        page: 1,
+        pageSize: 200
     }
 
-    ZOHO.CREATOR.getAllRecords(config1).then(function(response){
+    ZOHO.CREATOR.API.getAllRecords(config1).then(function(response){
         var record = response.data
         a = 0
         record.forEach(data =>{
@@ -21,10 +23,12 @@ ZOHO.CREATOR.init().then(function(data){
 
     var config2 = {
         appName : "product-distribution",
-        formName : "All_Warehouses"
+        formName : "All_Warehouses",
+        page: 1,
+        pageSize: 200
     }
 
-    ZOHO.CREATOR.getAllRecords(config2).then(function(response){
+    ZOHO.CREATOR.API.getAllRecords(config2).then(function(response){
         var record = response.data
         a = 0
         record.forEach(data2 =>{
