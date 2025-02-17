@@ -7,7 +7,7 @@ ZOHO.CREATOR.init()
         fetchRecords2()
         fetchChartData()
         initializeSearch()
-        
+
 
         // First API call for Outward Quantity
         var config1 = {
@@ -47,40 +47,17 @@ ZOHO.CREATOR.init()
     })
 
 function initializeSearch() {
-        const searchInput = document.querySelector('.search-container input');
-        searchInput.addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            
-            // Filter all records
-            const filteredAllRecords = allRecords.filter(record => 
-                Object.values(record).some(value => 
-                    value && (
-                        (typeof value === 'string' && value.toLowerCase().includes(searchTerm)) ||
-                        (typeof value === 'object' && value.display_value && 
-                         value.display_value.toLowerCase().includes(searchTerm))
-                    )
-                )
-            );
-            
-            // Filter monthly records
-            const filteredMonthlyRecords = monthlyRecords.filter(record =>
-                Object.values(record).some(value => 
-                    value && (
-                        (typeof value === 'string' && value.toLowerCase().includes(searchTerm)) ||
-                        (typeof value === 'object' && value.display_value && 
-                         value.display_value.toLowerCase().includes(searchTerm))
-                    )
-                )
-            );
-    
-            // Reset to first page and update both tables
-            currentPage = 1;
-            displayRecords(filteredAllRecords, currentPage, 'purchaseTableBody', 'allPurchaseOrdersPagination');
-            displayRecords(filteredMonthlyRecords, currentPage, 'monthlypurchaseorder', 'monthlyPurchaseOrdersPagination');
+    const searchInput = document.querySelector('.search-container input');
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+
+        // Search in both tables
+        ['allPurchaseOrders', 'monthlyPurchaseOrders'].forEach(tableId => {
+            const table = $(`#${tableId}`).DataTable();
+            table.search(searchTerm).draw();
         });
-    }
-
-
+    });
+}
 
 function updateCounts() {
     const reports = {
@@ -224,12 +201,12 @@ function fetchChartData() {
             } else {
                 console.error("Error: No data received from All_Shipping.");
             }
-        }).catch(error =>{
+        }).catch(error => {
             console.error("Error fetching shipping data:", error);
-    })
+        })
 }
 
-function processChartData(records){
+function processChartData(records) {
     let shippingMap = {};
 
     records.forEach(record => {
