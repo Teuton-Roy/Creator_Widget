@@ -8,6 +8,9 @@
     <script src="https://js.zohostatic.com/creator/widgets/version/1.0/widgetsdk-min.js"></script>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.css">
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
     <script src="script.js"></script>
   </head>
   <body>
@@ -17,42 +20,42 @@
 
     <div class="matrics-grid">
       <div class="metric-card">
-        <h2>0</h2>
+        <h2 id="Total_Employees">0</h2>
         <p>Total Employees</p>
       </div>
       <div class="metric-card">
-        <h2>0</h2>
+        <h2 id="Total_Agencies">0</h2>
         <p>Total Number of Agencies</p>
       </div>
       <div class="metric-card">
-        <h2>0</h2>
+        <h2 id="Total_Purchase_Orders">0</h2>
         <p>Total Purchase Orders</p>
       </div>
       <div class="metric-card">
-        <h2>0</h2>
+        <h2 id="Total_Shipping">0</h2>
         <p>Total Shipping</p>
       </div>
     </div>
 
     <div class="production-grid">
       <div class="production-card">
-        <h2>0</h2>
+        <h2 id="Total_Godowns">0</h2>
         <p>Total Godowns</p>
       </div>
       <div class="production-card">
-        <h2>0</h2>
+        <h2 id="Total_Manufacturers">0</h2>
         <p>Total Manufacturers</p>
       </div>
     </div>
 
     <div class="quantity-grid">
       <div class="quantity-card">
-        <h2>0</h2>
-        <p id="Total_Dispatched_Warehouse">Total Dispatched Quantity in Warehouse</p>
+        <h2 id="Total_Dispatched_Warehouse">0</h2>
+        <p>Total Dispatched Quantity in Warehouse</p>
       </div>
       <div class="quantity-card">
-        <h2>0</h2>
-        <p id="Total_Remaining_Outward">Total Remaining Quantity in Outward Quantity</p>
+        <h2 id="Total_Remaining_Outward">0</h2>
+        <p>Total Remaining Quantity in Outward Quantity</p>
       </div>
     </div>
 
@@ -72,16 +75,19 @@
               <th>GSTN Number</th>
               <th>Manufacturer Name</th>
               <th>Item Name</th>
+              <th>Manufacturer Email-ID</th>
+              <th>Start Date of Manufacturing</th>
+              <th>End Date of Manufacturing</th>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody id="purchaseTableBody"></tbody>
         </table>
         
         <div class="pagination">
           <span>Showing 5 of 5</span>
           <div>
-            <button disabled>Previous</button>
-            <button disabled>Next</button>
+            <!-- <button disabled>Previous</button>
+            <button disabled>Next</button> -->
           </div>
         </div>
       </div>
@@ -95,15 +101,18 @@
               <th>GSTN Number</th>
               <th>Manufacturer Name</th>
               <th>Item Name</th>
+              <th>Manufacturer Email-ID</th>
+              <th>Start Date of Manufacturing</th>
+              <th>End Date of Manufacturing</th>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody id="monthlypurchaseorder"></tbody>
         </table>
         <div class="pagination">
           <span>Showing 5 of 5</span>
             <div>
-              <button disabled>Previous</button>
-              <button disabled>Next</button>
+              <!-- <button disabled>Previous</button>
+              <button disabled>Next</button> -->
             </div>
         </div>
       </div>
