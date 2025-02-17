@@ -6,6 +6,7 @@ ZOHO.CREATOR.init()
         fetchRecords()
         fetchRecords2()
         fetchChartData()
+        initializeSearch()
         
 
         // First API call for Outward Quantity
@@ -44,6 +45,40 @@ ZOHO.CREATOR.init()
                 document.getElementById("Total_Dispatched_Warehouse").innerText = total;
             })
     })
+
+function initializeSearch() {
+        const searchInput = document.querySelector('.search-container input');
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            // Filter all records
+            const filteredAllRecords = allRecords.filter(record => 
+                Object.values(record).some(value => 
+                    value && (
+                        (typeof value === 'string' && value.toLowerCase().includes(searchTerm)) ||
+                        (typeof value === 'object' && value.display_value && 
+                         value.display_value.toLowerCase().includes(searchTerm))
+                    )
+                )
+            );
+            
+            // Filter monthly records
+            const filteredMonthlyRecords = monthlyRecords.filter(record =>
+                Object.values(record).some(value => 
+                    value && (
+                        (typeof value === 'string' && value.toLowerCase().includes(searchTerm)) ||
+                        (typeof value === 'object' && value.display_value && 
+                         value.display_value.toLowerCase().includes(searchTerm))
+                    )
+                )
+            );
+    
+            // Reset to first page and update both tables
+            currentPage = 1;
+            displayRecords(filteredAllRecords, currentPage, 'purchaseTableBody', 'allPurchaseOrdersPagination');
+            displayRecords(filteredMonthlyRecords, currentPage, 'monthlypurchaseorder', 'monthlyPurchaseOrdersPagination');
+        });
+    }
 
 
 
@@ -255,8 +290,6 @@ function updateChart(shippingData) {
         }
     });
 }
-
-
 
 
 
