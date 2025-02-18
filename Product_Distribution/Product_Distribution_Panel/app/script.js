@@ -406,12 +406,15 @@ let paginationState = {
         data: []
     }
 };
-const recordsPerPage = 200;
+
+
+const recordsPerPage = 100;
 
 function fetchRecords() {
     var config4 = {
         appName: "product-distribution",
         reportName: "All_Purchase_Orders",
+        pageSize: 200
     };
 
     ZOHO.CREATOR.API.getAllRecords(config4).then(function (response) {
@@ -503,6 +506,7 @@ function fetchRecords2() {
     var config5 = {
         appName: "product-distribution",
         reportName: "All_Purchase_Orders",
+        pageSize:200
     };
 
     ZOHO.CREATOR.API.getAllRecords(config5)
@@ -525,7 +529,7 @@ function isCurrentMonth(dateString) {
 function fetchChartData() {
     var config6 = {
         appName: "product-distribution",
-        reportName: "All_Shippings"
+        reportName: "All_Shippings",
     };
 
     ZOHO.CREATOR.API.getAllRecords(config6)
