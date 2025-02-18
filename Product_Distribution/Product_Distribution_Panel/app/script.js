@@ -280,7 +280,7 @@ let paginationState = {
 };
 
 
-const recordsPerPage = 500;
+const recordsPerPage = 100;
 
 async function fetchRecords() {
     const config4 = {

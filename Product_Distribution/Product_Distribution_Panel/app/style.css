@@ -125,6 +125,7 @@ body {
     border-radius: 4px;
     overflow: auto; /* Add scroll for overflow content */
     max-height: 600px; /* Limit height */
+    position: relative;
 }
 
 table {
@@ -145,11 +146,16 @@ th {
 }
 
 .pagination {
+    position: sticky;
+    /* bottom: 0; */
+    background: white;
+    padding: 10px 0;
     margin-top: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 10px;
+    /* box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+    z-index: 10; */
 }
 
 .pagination-info {
@@ -248,4 +254,22 @@ th {
     padding: 4px 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
+}
+
+.table-container tbody::-webkit-scrollbar {
+  width: 6px;
+}
+
+.table-container tbody::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.table-container tbody::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.table-container tbody::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
