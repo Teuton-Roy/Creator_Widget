@@ -386,7 +386,7 @@ async function fetchChartData() {
                 hasMoreRecords = false;
             }
 
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 100));
         }
 
         if (allRecords.length === 0) {
@@ -626,7 +626,7 @@ async function fetchRecords() {
             }
 
             // Add a small delay to prevent rate limiting
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 100));
         }
 
         console.log("All purchase orders", allRecords);
@@ -756,7 +756,7 @@ async function fetchRecords2() {
             }
 
             // Add a small delay to prevent rate limiting
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 100));
         }
 
         // Filter for current month
