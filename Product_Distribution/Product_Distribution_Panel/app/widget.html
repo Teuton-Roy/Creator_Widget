@@ -68,7 +68,8 @@
     <div class="table-grid">
       <div class="table-container">
         <h3 class="chart-title">All Purchase Orders</h3>
-        <table id="allPurchaseOrders">
+        <!-- <table id="allPurchaseOrders"> -->
+        <table id="table1" class="display">
           <thead>
             <tr>
               <th>Purchase Order Number</th>
@@ -83,18 +84,20 @@
           <tbody id="purchaseTableBody"></tbody>
         </table>
         
-        <div class="pagination">
+        <!-- <div class="pagination"> -->
+        <div id="allPurchaseOrdersPagination" class="pagination">
           <span>Showing 5 of 5</span>
           <div>
-            <!-- <button disabled>Previous</button>
-            <button disabled>Next</button> -->
+            <button enable>Previous</button>
+            <button enable>Next</button>
           </div>
         </div>
       </div>
 
       <div class="table-container">
         <h3 class="chart-title">Monthly Purchase Orders</h3>
-        <table id="monthlyPurchaseOrders">
+        <!-- <table id="monthlyPurchaseOrders"> -->
+        <table id="table2" class="display">
           <thead>
             <tr>
               <th>Purchase Order Number</th>
@@ -106,13 +109,15 @@
               <th>End Date of Manufacturing</th>
             </tr>
           </thead>
+          <!-- <tbody id="monthlypurchaseorder"></tbody> -->
           <tbody id="monthlypurchaseorder"></tbody>
         </table>
-        <div class="pagination">
+        <!-- <div class="pagination"> -->
+        <div id="monthlyPurchaseOrdersPagination" class="pagination">
           <span>Showing 5 of 5</span>
             <div>
-              <!-- <button disabled>Previous</button>
-              <button disabled>Next</button> -->
+              <button enable>Previous</button>
+              <button enable>Next</button>
             </div>
         </div>
       </div>
