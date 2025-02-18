@@ -290,14 +290,197 @@
 
 
 //-----------------------------
+let chartInstance = null;
+
+// Chart initialization and update function
+function updateChart(shippingData) {
+    try {
+        const canvas = document.getElementById('destinationChart');
+        if (!canvas) {
+            console.error('Chart canvas element not found');
+            return;
+        }
+
+        const ctx = canvas.getContext('2d');
+        
+        // Destroy existing chart if it exists
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+
+        // Create new chart
+        chartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: shippingData.labels,
+                datasets: [{
+                    label: 'Quantity Shipped',
+                    data: shippingData.data,
+                    backgroundColor: 'rgba(41, 112, 55, 0.7)',
+                    borderColor: 'rgb(34, 106, 44)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Quantity'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Destination'
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Quantity: ${context.parsed.y}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error updating chart:', error);
+        throw error; // Rethrow to handle it in the calling function
+    }
+}
+
+async function fetchChartData() {
+    const config6 = {
+        appName: "product-distribution",
+        reportName: "All_Shippings"
+    };
+
+    try {
+        let allRecords = [];
+        let page = 1;
+        let hasMoreRecords = true;
+
+        while (hasMoreRecords) {
+            const response = await ZOHO.CREATOR.API.getAllRecords({
+                ...config6,
+                page: page,
+                pageSize: 200
+            });
+
+            if (response && response.data && response.data.length > 0) {
+                allRecords = [...allRecords, ...response.data];
+                console.log(`Fetched ${allRecords.length} shipping records so far...`);
+                
+                if (response.data.length < 200) {
+                    hasMoreRecords = false;
+                } else {
+                    page++;
+                }
+            } else {
+                hasMoreRecords = false;
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        if (allRecords.length === 0) {
+            console.warn('No shipping records found');
+            return;
+        }
+
+        const shippingData = processChartData(allRecords);
+        if (!shippingData || !shippingData.labels || !shippingData.data) {
+            throw new Error('Invalid data format after processing');
+        }
+
+        try {
+            await updateChart(shippingData);
+        } catch (chartError) {
+            console.error('Failed to update chart:', chartError);
+            // Handle chart update failure
+            const canvas = document.getElementById('destinationChart');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.font = '14px Arial';
+                ctx.fillStyle = 'red';
+                ctx.textAlign = 'center';
+                ctx.fillText('Error updating chart. Please refresh the page.', canvas.width/2, canvas.height/2);
+            }
+        }
+
+    } catch (error) {
+        console.error("Error fetching shipping data:", error);
+        const canvas = document.getElementById('destinationChart');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.font = '14px Arial';
+            ctx.fillStyle = 'red';
+            ctx.textAlign = 'center';
+            ctx.fillText('Error loading chart data. Please try again.', canvas.width/2, canvas.height/2);
+        }
+    }
+}
+
+function processChartData(records) {
+    try {
+        let shippingMap = {};
+
+        records.forEach(record => {
+            if (record && record.Destination1 && record.Destination1.display_value) {
+                let destination = record.Destination1.display_value || "Unknown";
+                let quantity = parseInt(record.Quantity) || 0;
+
+                shippingMap[destination] = (shippingMap[destination] || 0) + quantity;
+            }
+        });
+
+        if (Object.keys(shippingMap).length === 0) {
+            return {
+                labels: ['No Data'],
+                data: [0]
+            };
+        }
+
+        return {
+            labels: Object.keys(shippingMap),
+            data: Object.values(shippingMap)
+        };
+    } catch (error) {
+        console.error('Error processing chart data:', error);
+        throw error;
+    }
+}
+
+// Initialize chart when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        // Initialize with empty data
+        updateChart({
+            labels: [],
+            data: []
+        });
+    } catch (error) {
+        console.error('Failed to initialize chart:', error);
+    }
+});
+
+
 ZOHO.CREATOR.init()
-    .then(function (data) {
+    .then(async function (data) {
         console.log("Initialization successful");
 
         updateCounts();
-        fetchRecords();
-        fetchRecords2();
-        fetchChartData();
+        await fetchRecords();
+        await fetchRecords2();
+        await fetchChartData();
         initializeShippingSearch();
 
         // First API call for Outward Quantity
@@ -410,12 +593,51 @@ let paginationState = {
 
 const recordsPerPage = 500;
 
-function fetchRecords() {
-    var config4 = {
+async function fetchRecords() {
+    const config4 = {
         appName: "product-distribution",
-        reportName: "All_Purchase_Orders",
-        pageSize: 200
+        reportName: "All_Purchase_Orders"
     };
+
+    try {
+        let allRecords = [];
+        let page = 1;
+        let hasMoreRecords = true;
+
+        while (hasMoreRecords) {
+            const response = await ZOHO.CREATOR.API.getAllRecords({
+                ...config4,
+                page: page,
+                pageSize: 200
+            });
+
+            if (response && response.data && response.data.length > 0) {
+                allRecords = [...allRecords, ...response.data];
+                console.log(`Fetched ${allRecords.length} records so far...`);
+                
+                // If we got less than 200 records, we've reached the end
+                if (response.data.length < 200) {
+                    hasMoreRecords = false;
+                } else {
+                    page++;
+                }
+            } else {
+                hasMoreRecords = false;
+            }
+
+            // Add a small delay to prevent rate limiting
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        console.log("All purchase orders", allRecords);
+        paginationState.allPurchaseOrders.data = allRecords;
+        displayRecords('allPurchaseOrders', 'purchaseTableBody', 'allPurchaseOrdersPagination');
+
+    } catch (error) {
+        console.error("Error fetching records:", error);
+    }
+}
+
 
     ZOHO.CREATOR.API.getAllRecords(config4).then(function (response) {
         if (response && response.data) {
@@ -433,7 +655,6 @@ function fetchRecords() {
     }).catch(error => {
         console.error("Error fetching records:", error);
     });
-}
 
 function displayRecords(stateKey, tableId, paginationId) {
     // Get required elements
@@ -502,21 +723,55 @@ function changePage(stateKey, tableId, paginationId, newPage) {
     }
 }
 
-function fetchRecords2() {
-    var config5 = {
+async function fetchRecords2() {
+    const config5 = {
         appName: "product-distribution",
-        reportName: "All_Purchase_Orders",
-        pageSize:200
+        reportName: "All_Purchase_Orders"
     };
 
-    ZOHO.CREATOR.API.getAllRecords(config5)
-        .then(function (response) {
-            paginationState.monthlyPurchaseOrders.data = response.data.filter(record =>
-                isCurrentMonth(record.Start_Date_of_Manufacturing)
-            );
-            displayRecords('monthlyPurchaseOrders', 'monthlypurchaseorder', 'monthlyPurchaseOrdersPagination');
-        });
+    try {
+        let allRecords = [];
+        let page = 1;
+        let hasMoreRecords = true;
+
+        while (hasMoreRecords) {
+            const response = await ZOHO.CREATOR.API.getAllRecords({
+                ...config5,
+                page: page,
+                pageSize: 200
+            });
+
+            if (response && response.data && response.data.length > 0) {
+                allRecords = [...allRecords, ...response.data];
+                console.log(`Fetched ${allRecords.length} monthly records so far...`);
+                
+                // If we got less than 200 records, we've reached the end
+                if (response.data.length < 200) {
+                    hasMoreRecords = false;
+                } else {
+                    page++;
+                }
+            } else {
+                hasMoreRecords = false;
+            }
+
+            // Add a small delay to prevent rate limiting
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        // Filter for current month
+        const monthlyRecords = allRecords.filter(record =>
+            isCurrentMonth(record.Start_Date_of_Manufacturing)
+        );
+
+        paginationState.monthlyPurchaseOrders.data = monthlyRecords;
+        displayRecords('monthlyPurchaseOrders', 'monthlypurchaseorder', 'monthlyPurchaseOrdersPagination');
+
+    } catch (error) {
+        console.error("Error fetching records:", error);
+    }
 }
+
 
 function isCurrentMonth(dateString) {
     if (!dateString) return false;
@@ -526,95 +781,172 @@ function isCurrentMonth(dateString) {
         recordDate.getMonth() === currentDate.getMonth());
 }
 
-function fetchChartData() {
-    var config6 = {
-        appName: "product-distribution",
-        reportName: "All_Shippings",
-    };
+// // First, declare chartInstance at the top level
+// let chartInstance = null;
 
-    ZOHO.CREATOR.API.getAllRecords(config6)
-        .then(response => {
-            if (response && response.data) {
-                let shippingData = processChartData(response.data);
-                updateChart(shippingData);
-            } else {
-                console.error("Error: No data received from All_Shipping.");
-            }
-        }).catch(error => {
-            console.error("Error fetching shipping data:", error);
-        });
-}
+// function updateChart(shippingData) {
+//     try {
+//         const canvas = document.getElementById('destinationChart');
+//         if (!canvas) {
+//             console.error('Chart canvas element not found');
+//             return;
+//         }
 
-function processChartData(records) {
-    let shippingMap = {};
+//         const ctx = canvas.getContext('2d');
+        
+//         // Destroy existing chart if it exists
+//         if (chartInstance) {
+//             chartInstance.destroy();
+//         }
 
-    records.forEach(record => {
-        let destination = record.Destination1.display_value || "Unknown";
-        let quantity = parseInt(record.Quantity) || 0;
+//         // Create new chart
+//         chartInstance = new Chart(ctx, {
+//             type: 'bar',
+//             data: {
+//                 labels: shippingData.labels,
+//                 datasets: [{
+//                     label: 'Quantity Shipped',
+//                     data: shippingData.data,
+//                     backgroundColor: 'rgba(41, 112, 55, 0.7)',
+//                     borderColor: 'rgb(34, 106, 44)',
+//                     borderWidth: 1
+//                 }]
+//             },
+//             options: {
+//                 responsive: true,
+//                 scales: {
+//                     y: {
+//                         beginAtZero: true,
+//                         title: {
+//                             display: true,
+//                             text: 'Quantity'
+//                         }
+//                     },
+//                     x: {
+//                         title: {
+//                             display: true,
+//                             text: 'Destination'
+//                         }
+//                     }
+//                 },
+//                 plugins: {
+//                     tooltip: {
+//                         callbacks: {
+//                             label: function(context) {
+//                                 return `Quantity: ${context.parsed.y}`;
+//                             }
+//                         }
+//                     }
+//                 }
+//             }
+//         });
+//     } catch (error) {
+//         console.error('Error updating chart:', error);
+//     }
+// }
 
-        if (shippingMap[destination]) {
-            shippingMap[destination] += quantity;
-        } else {
-            shippingMap[destination] = quantity;
-        }
-    });
+// async function fetchChartData() {
+//     const config6 = {
+//         appName: "product-distribution",
+//         reportName: "All_Shippings"
+//     };
 
-    return {
-        labels: Object.keys(shippingMap),
-        data: Object.values(shippingMap)
-    };
-}
+//     try {
+//         let allRecords = [];
+//         let page = 1;
+//         let hasMoreRecords = true;
 
-let chartInstance = null;
+//         while (hasMoreRecords) {
+//             const response = await ZOHO.CREATOR.API.getAllRecords({
+//                 ...config6,
+//                 page: page,
+//                 pageSize: 200
+//             });
 
-function updateChart(shippingData) {
-    const ctx = document.getElementById('destinationChart').getContext('2d');
+//             if (response && response.data && response.data.length > 0) {
+//                 allRecords = [...allRecords, ...response.data];
+//                 console.log(`Fetched ${allRecords.length} shipping records so far...`);
+                
+//                 if (response.data.length < 200) {
+//                     hasMoreRecords = false;
+//                 } else {
+//                     page++;
+//                 }
+//             } else {
+//                 hasMoreRecords = false;
+//             }
 
-    if (chartInstance) {
-        chartInstance.destroy();
-    }
+//             await new Promise(resolve => setTimeout(resolve, 1000));
+//         }
 
-    chartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: shippingData.labels,
-            datasets: [{
-                label: 'Quantity Shipped',
-                data: shippingData.data,
-                backgroundColor: 'rgba(41, 112, 55, 0.7)',
-                borderColor: 'rgb(34, 106, 44)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Quantity'
-                    }
-                },
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Destination'
-                    }
-                }
-            },
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return `Quantity: ${context.parsed.y}`;
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
+//         if (allRecords.length === 0) {
+//             console.warn('No shipping records found');
+//             return;
+//         }
+
+//         const shippingData = processChartData(allRecords);
+//         if (!shippingData || !shippingData.labels || !shippingData.data) {
+//             throw new Error('Invalid data format after processing');
+//         }
+
+//         await updateChart(shippingData);
+
+//     } catch (error) {
+//         console.error("Error fetching shipping data:", error);
+//         // Show error message in chart area
+//         const canvas = document.getElementById('destinationChart');
+//         if (canvas) {
+//             const ctx = canvas.getContext('2d');
+//             ctx.clearRect(0, 0, canvas.width, canvas.height);
+//             ctx.font = '14px Arial';
+//             ctx.fillStyle = 'red';
+//             ctx.textAlign = 'center';
+//             ctx.fillText('Error loading chart data. Please try again.', canvas.width/2, canvas.height/2);
+//         }
+//     }
+// }
+
+// function processChartData(records) {
+//     try {
+//         let shippingMap = {};
+
+//         records.forEach(record => {
+//             if (record && record.Destination1 && record.Destination1.display_value) {
+//                 let destination = record.Destination1.display_value || "Unknown";
+//                 let quantity = parseInt(record.Quantity) || 0;
+
+//                 shippingMap[destination] = (shippingMap[destination] || 0) + quantity;
+//             }
+//         });
+
+//         // Ensure we have data
+//         if (Object.keys(shippingMap).length === 0) {
+//             console.warn('No valid shipping data to display');
+//             return {
+//                 labels: ['No Data'],
+//                 data: [0]
+//             };
+//         }
+
+//         return {
+//             labels: Object.keys(shippingMap),
+//             data: Object.values(shippingMap)
+//         };
+//     } catch (error) {
+//         console.error('Error processing chart data:', error);
+//         throw error;
+//     }
+// }
+
+// // Make sure Chart.js is loaded before initializing
+// document.addEventListener('DOMContentLoaded', () => {
+//     // Initialize chart with empty data
+//     updateChart({
+//         labels: [],
+//         data: []
+//     });
+// });
+
 //-----------------------------
 
 
