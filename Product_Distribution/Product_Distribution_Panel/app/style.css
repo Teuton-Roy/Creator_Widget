@@ -6,7 +6,7 @@
 }
 
 body {
-    background-color: #f0f5f0;
+    background-color: #e3f6e3;
     padding: 20px;
 }
 
@@ -127,6 +127,7 @@ body {
     max-height: 600px; /* Limit height */
     position: relative;
 }
+
 
 table {
     width: 100%;
