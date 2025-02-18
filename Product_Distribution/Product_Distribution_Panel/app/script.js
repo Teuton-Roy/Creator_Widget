@@ -408,7 +408,7 @@ let paginationState = {
 };
 
 
-const recordsPerPage = 100;
+const recordsPerPage = 500;
 
 function fetchRecords() {
     var config4 = {
