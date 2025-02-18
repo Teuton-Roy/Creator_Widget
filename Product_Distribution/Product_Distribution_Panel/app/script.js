@@ -237,26 +237,6 @@ function initializeShippingSearch() {
     });
 }
 
-function searchShippingRecords(searchTerm) {
-    var config = {
-        appName: "product-distribution",
-        reportName: "All_Shippings",
-        criteria: `(Destination1.display_value.toLowerCase().contains("${searchTerm}") || Quantity.toString().contains("${searchTerm}"))`
-    };
-
-    ZOHO.CREATOR.API.getAllRecords(config)
-        .then(function(response) {
-            if (response.data) {
-                updateShippingResults(response.data);
-            } else {
-                console.error("Error: No data received from All_Shipping.");
-            }
-        })
-        .catch(function(error) {
-            console.error("Error searching shipping records:", error);
-        });
-}
-
 function updateCounts() {
     const reports = {
         "Total_Purchase_Orders": "All_Purchase_Orders",
