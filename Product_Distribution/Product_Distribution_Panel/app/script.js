@@ -17,6 +17,7 @@ function updateChart(shippingData) {
             chartInstance.destroy();
         }
 
+        
         // Create new chart
         chartInstance = new Chart(ctx, {
             type: 'bar',
