@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Purchase Orders Dashboard</title>
   <script src="https://js.zohostatic.com/creator/widgets/version/1.0/widgetsdk-min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
   <link rel="stylesheet" href="style.css">
-  <script src="script.js"></script>
 </head>
 <body>
   <div id="app">
@@ -17,10 +19,12 @@
     
     <div class="charts-container">
       <div class="chart">
-        <div id="quantityChart"></div>
+        <!-- <div id="quantityChart"></div> -->
+        <canvas id="quantityChart"></canvas>
       </div>
       <div class="chart">
-        <div id="paymentChart"></div>
+        <!-- <div id="paymentChart"></div> -->
+        <canvas id="paymentChart"></canvas>
       </div>
     </div>
 
@@ -36,15 +40,13 @@
             <th>Item Name</th>
             <th>Start Date of Manufacturing</th>
             <th>End Date of Manufacturing</th>
+            <th>Current User</th>
           </tr>
         </thead>
         <tbody></tbody>
       </table>
-      <div class="table-footer">
-        <span>Showing 3 of 3</span>
-      </div>
     </div>
   </div>
-  <dix class="test"></dix>
+  <script src="script.js"></script>
 </body>
 </html>
