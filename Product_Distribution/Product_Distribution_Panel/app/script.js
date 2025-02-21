@@ -191,7 +191,7 @@ ZOHO.CREATOR.init()
         await fetchRecords();
         await fetchRecords2();
         await fetchChartData();
-        initializeShippingSearch();
+        initializeSearch();
 
         // First API call for Outward Quantity
         var config1 = {
@@ -229,14 +229,6 @@ ZOHO.CREATOR.init()
                 document.getElementById("Total_Dispatched_Warehouse").innerText = total;
             });
     });
-
-function initializeShippingSearch() {
-    const searchInput = document.querySelector('.search-container input');
-    searchInput.addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
-        searchShippingRecords(searchTerm);
-    });
-}
 
 function updateCounts() {
     const reports = {
@@ -470,6 +462,7 @@ function isCurrentMonth(dateString) {
     return (recordDate.getFullYear() === currentDate.getFullYear() &&
         recordDate.getMonth() === currentDate.getMonth());
 }
+
 
 // #########################################################################################################
 // First, declare chartInstance at the top level

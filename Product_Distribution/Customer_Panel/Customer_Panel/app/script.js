@@ -74,7 +74,7 @@ function populateTable(purchaseOrders) {
         // Add click event listeners for rows
         const rows = tbody.getElementsByTagName('tr');
         Array.from(rows).forEach(row => {
-            row.addEventListener('click', function() {
+            row.addEventListener('click', function () {
                 // Toggle selected class
                 this.classList.toggle('selected');
             });
@@ -85,7 +85,7 @@ function populateTable(purchaseOrders) {
 
     } catch (err) {
         console.error("Error in populateTable:", err);
-        
+
         // Show error in table
         const tbody = document.querySelector('#ordersTable tbody');
         if (tbody) {
@@ -102,7 +102,7 @@ function populateTable(purchaseOrders) {
 // Helper function to format dates
 function formatDate(dateString) {
     if (!dateString || dateString === '-') return '-';
-    
+
     try {
         const date = new Date(dateString);
         if (isNaN(date.getTime())) return dateString; // Return original if invalid date
@@ -118,66 +118,73 @@ function formatDate(dateString) {
     }
 }
 
+
 ZOHO.CREATOR.init()
-    .then(function(data) {
+    .then(function (data) {
+        
         var queryParams = ZOHO.CREATOR.UTIL.getInitParams();
         console.log(queryParams);
-        
+
         let login = queryParams.loginUser;
         console.log("Logged in user:", login);
 
+
         var configMetadata = {
-            appName: "product-distribution",        
+            appName: "product-distribution",
             reportName: "All_Purchase_Orders",
         }
 
+        
         // Get all records
         ZOHO.CREATOR.API.getAllRecords(configMetadata)
-        .then(function(response) {
-            console.log("Sample record structure:", response.data);
-            
-            var config = {
-                appName: "product-distribution",        
-                reportName: "All_Purchase_Orders",
-                // criteria: `(Email == \"${login}\")`
-            }
-            
-            return ZOHO.CREATOR.API.getAllRecords(config);
-            // return config
-        })
-        .then(function(response) {
-            console.log(response);
-            
-            if (response && response.data && response.data.length > 0) {
-                console.log("Filtered records:", response.data);
-                populateTable(response.data);
-                createCharts(response.data);
-            } else {
-                clearCharts();
-                const tbody = document.querySelector('#ordersTable tbody');
-                tbody.innerHTML = `
+            .then(function (response) {
+                console.log("Sample record structure:", response.data);
+
+                var config = {
+                    appName: "product-distribution",
+                    reportName: "All_Purchase_Orders",
+                    // criteria: `(Email == \"${login}\")`
+                }
+
+                return ZOHO.CREATOR.API.getAllRecords(config);
+                // return config
+            })
+            .then(function (response) {
+                console.log(response);
+
+                if (response && response.data && response.data.length > 0) {
+                    console.log("Filtered records:", response.data);
+                    populateTable(response.data);
+                    createCharts(response.data);
+                    initializeSearch()
+                } else {
+                    clearCharts();
+                    const tbody = document.querySelector('#ordersTable tbody');
+                    tbody.innerHTML = `
                     <tr>
                         <td colspan="7" style="text-align: center; padding: 20px;">No records found</td>
                     </tr>`;
-            }
-        })
-        .catch(function(error) {
-            console.error("Error:", error);
-            clearCharts();
-            const tbody = document.querySelector('#ordersTable tbody');
-            tbody.innerHTML = `
+                }
+            })
+            
+            .catch(function (error) {
+                console.error("Error:", error);
+                clearCharts();
+                const tbody = document.querySelector('#ordersTable tbody');
+                tbody.innerHTML = `
                 <tr>
                     <td colspan="7" style="text-align: center; padding: 20px; color: red;">
                         Error loading data: ${error.message}
                     </td>
                 </tr>`;
-        });
+            });
     });
 
 function createCharts(data) {
     createQuantityChart(data);
     createPaymentChart(data);
 }
+
 
 function createQuantityChart(data) {
     try {
@@ -200,7 +207,7 @@ function createQuantityChart(data) {
             const itemName = order.Item_Name.display_value || order.Item_Name || 'Unknown';
             // Ensure we're getting a number for quantity
             const quantity = parseInt(order.Total_Quantity_Allocation) || 0;
-            
+
             if (itemQuantities[itemName]) {
                 itemQuantities[itemName] += quantity;
             } else {
@@ -257,7 +264,7 @@ function createQuantityChart(data) {
                     tooltip: {
                         enabled: true,
                         callbacks: {
-                            label: function(context) {
+                            label: function (context) {
                                 return `Quantity: ${context.parsed.x}`;
                             }
                         }
@@ -341,14 +348,14 @@ function createPaymentChart(data) {
 
         // Process data to sum up quantities and payments for each item
         const chartData = {};
-        
+
         // Log initial data
         console.log("Initial data for payment chart:", data);
 
         data.forEach(order => {
             // Get item name, handling possible display_value format
             const itemName = order.Item_Name.display_value || order.Item_Name || 'Unknown';
-            
+
             // Get quantities and payments, ensure they're numbers
             const allocatedQuantity = parseInt(order.Total_Quantity_Allocation) || 0;
             const remainingPayment = parseFloat(order.Total_Remaining_Payment) || 0;
@@ -424,7 +431,7 @@ function createPaymentChart(data) {
                     tooltip: {
                         enabled: true,
                         callbacks: {
-                            label: function(context) {
+                            label: function (context) {
                                 if (context.dataset.label === 'Total Allocated Quantity') {
                                     return `Quantity: ${context.parsed.y}`;
                                 } else {
@@ -464,7 +471,7 @@ function createPaymentChart(data) {
                             drawTicks: true
                         },
                         ticks: {
-                            callback: function(value) {
+                            callback: function (value) {
                                 return '₹' + value.toLocaleString();
                             },
                             font: {
@@ -500,19 +507,57 @@ function createPaymentChart(data) {
     }
 }
 
+// search functionality
+
+function initializeSearch() {
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.querySelector('.search-btn');
+
+    if (!searchInput || !searchBtn) {
+        console.error('Search elements not found!');
+        return;
+    }
+
+    // Add event listener for search button click
+    searchBtn.addEventListener('click', performSearch);
+
+    // Add event listener for input changes (real-time search)
+    searchInput.addEventListener('input', performSearch);
+
+    // Add event listener for Enter key press
+    searchInput.addEventListener('keyup', (event) => {
+        if (event.key === 'Enter') {
+            performSearch();
+        }
+    });
+}
+
+function performSearch() {
+    const searchInput = document.getElementById('searchInput');
+    const searchValue = searchInput.value.toLowerCase().trim();
+    const tbody = document.querySelector('#ordersTable tbody');
+    const rows = tbody.getElementsByTagName('tr');
+
+    Array.from(rows).forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchValue) ? '' : 'none';
+    });
+}
+
+
+
+
 function clearCharts() {
     if (quantityChart) {
         quantityChart.destroy();
         quantityChart = null;
     }
-    
+
     if (paymentChart) {
         paymentChart.destroy();
         paymentChart = null;
     }
 }
-
-
 
 
 
