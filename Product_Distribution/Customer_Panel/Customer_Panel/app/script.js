@@ -1,3 +1,62 @@
+//getAllRecords according to the {loginUser}
+ZOHO.CREATOR.init()
+    .then(function(data) {
+        var queryParams = ZOHO.CREATOR.UTIL.getInitParams();
+        
+        let login = queryParams.loginUser;
+        console.log("Logged in user:", login);
+
+
+        var configMetadata = {
+            appName: "product-distribution",        
+            reportName: "All_Purchase_Orders",
+        }
+
+        // Get all records
+        ZOHO.CREATOR.API.getAllRecords(configMetadata)
+        .then(function(response) {
+            console.log("Sample record structure:", response.data);
+            var config = {
+                appName: "product-distribution",        
+                reportName: "All_Purchase_Orders",
+                criteria: `(Email == \"${login}\")`
+            }
+            
+            return ZOHO.CREATOR.API.getAllRecords(config);
+        })
+        .then(function(response) {
+            if (response && response.data) {
+                console.log("Filtered records:", response.data);
+                // displayUserRecords(response.data);
+            } else {
+                // displayNoRecordsMessage();
+            }
+        })
+        .catch(function(error) {
+            console.error("Error:", error);
+            // displayErrorMessage(error);
+        });
+    });
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//----------------------------------------------------------------------
 // // Sample data
 // const purchaseOrders = [
 //     {
@@ -256,43 +315,3 @@
 //   // Initialize when the page loads
 //   document.addEventListener('DOMContentLoaded', initDashboard);
 
-
-//getAllRecords according to the {loginUser}
-ZOHO.CREATOR.init()
-    .then(function(data) {
-        var queryParams = ZOHO.CREATOR.UTIL.getInitParams();
-        let login = queryParams.loginUser;
-        let userName = queryParams.userName;
-        console.log("Logged in user:", login);
-        console.log("Logged in user:", userName);
-
-        var configMetadata = {
-            appName: "product-distribution",        
-            reportName: "All_Purchase_Orders",
-        }
-
-        // Get all records
-        ZOHO.CREATOR.API.getAllRecords(configMetadata)
-        .then(function(response) {
-            console.log("Sample record structure:", response.data);
-            var config = {
-                appName: "product-distribution",        
-                reportName: "All_Purchase_Orders",
-                criteria: `(Email == \"${login}\")`
-            }
-            
-            return ZOHO.CREATOR.API.getAllRecords(config);
-        })
-        .then(function(response) {
-            if (response && response.data) {
-                console.log("Filtered records:", response.data);
-                displayUserRecords(response.data);
-            } else {
-                displayNoRecordsMessage();
-            }
-        })
-        .catch(function(error) {
-            console.error("Error:", error);
-            displayErrorMessage(error);
-        });
-    });
