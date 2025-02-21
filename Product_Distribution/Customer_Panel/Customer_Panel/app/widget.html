@@ -1,9 +1,50 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-  </head>
-  <body>
-    <h2>This is a sample Widget built using Zoho Extension toolkit.</h2>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Purchase Orders Dashboard</title>
+  <script src="https://js.zohostatic.com/creator/widgets/version/1.0/widgetsdk-min.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js"></script>
+</head>
+<body>
+  <div id="app">
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Enter value" />
+      <button class="search-btn">Search</button>
+    </div>
+    
+    <div class="charts-container">
+      <div class="chart">
+        <div id="quantityChart"></div>
+      </div>
+      <div class="chart">
+        <div id="paymentChart"></div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <h2>All Purchase Orders</h2>
+      <table id="ordersTable">
+        <thead>
+          <tr>
+            <th>Purchase Order Number</th>
+            <th>GSTIN Number</th>
+            <th>Manufacturer Name</th>
+            <th>Manufacturer Email-ID</th>
+            <th>Item Name</th>
+            <th>Start Date of Manufacturing</th>
+            <th>End Date of Manufacturing</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="table-footer">
+        <span>Showing 3 of 3</span>
+      </div>
+    </div>
+  </div>
+  <dix class="test"></dix>
+</body>
 </html>
