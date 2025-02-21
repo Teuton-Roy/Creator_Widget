@@ -643,6 +643,53 @@ function isCurrentMonth(dateString) {
 
 
 
+// changeing widget for dedicated user in portal
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ZOHO.CREATOR.init()
 //     .then(function (data) {
