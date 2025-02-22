@@ -164,3 +164,9 @@ Fetched 750 records so far...
 Total records fetched: 750
 
 This allows you to fetch and display all records in your application, not just the first 200. The client-side pagination still works the same way, but now it has access to all the records instead of just the first 200.
+
+### ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# Documentation for Product Distribution Dashboard JavaScript Code
+
+This document explains the JavaScript code for your "Product Distribution Dashboard," which displays charts, tables, pagination, and search functionality for purchase orders, shipping data, and other metrics. The code uses the Zoho Creator API, Chart.js for charts, and vanilla JavaScript for DOM manipulation.
