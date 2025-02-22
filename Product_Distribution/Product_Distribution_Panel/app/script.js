@@ -319,50 +319,7 @@ async function fetchRecords() {
     }
 }
 
-// async function fetchRecords() {
-//     const config4 = {
-//         appName: "product-distribution",
-//         reportName: "All_Purchase_Orders"
-//     };
 
-//     try {
-//         let allRecords = [];
-//         let page = 1;
-//         let hasMoreRecords = true;
-
-//         while (hasMoreRecords) {
-//             const response = await ZOHO.CREATOR.API.getAllRecords({
-//                 ...config4,
-//                 page: page,
-//                 pageSize: 200
-//             });
-
-//             if (response && response.data && response.data.length > 0) {
-//                 allRecords = [...allRecords, ...response.data];
-//                 console.log(`Fetched ${allRecords.length} records so far...`);
-                
-//                 // If we got less than 200 records, we've reached the end
-//                 if (response.data.length < 200) {
-//                     hasMoreRecords = false;
-//                 } else {
-//                     page++;
-//                 }
-//             } else {
-//                 hasMoreRecords = false;
-//             }
-
-//             // Add a small delay to prevent rate limiting
-//             await new Promise(resolve => setTimeout(resolve, 100));
-//         }
-
-//         console.log("All purchase orders", allRecords);
-//         paginationState.allPurchaseOrders.data = allRecords;
-//         displayRecords('allPurchaseOrders', 'purchaseTableBody', 'allPurchaseOrdersPagination');
-
-//     } catch (error) {
-//         console.error("Error fetching records:", error);
-//     }
-// }
 
 
     ZOHO.CREATOR.API.getAllRecords(config4).then(function (response) {
@@ -448,55 +405,6 @@ function changePage(stateKey, tableId, paginationId, newPage) {
         displayRecords(stateKey, tableId, paginationId);
     }
 }
-
-// async function fetchRecords2() {
-//     const config5 = {
-//         appName: "product-distribution",
-//         reportName: "All_Purchase_Orders"
-//     };
-
-//     try {
-//         let allRecords = [];
-//         let page = 1;
-//         let hasMoreRecords = true;
-
-//         while (hasMoreRecords) {
-//             const response = await ZOHO.CREATOR.API.getAllRecords({
-//                 ...config5,
-//                 page: page,
-//                 pageSize: 200
-//             });
-
-//             if (response && response.data && response.data.length > 0) {
-//                 allRecords = [...allRecords, ...response.data];
-//                 console.log(`Fetched ${allRecords.length} monthly records so far...`);
-                
-//                 // If we got less than 200 records, we've reached the end
-//                 if (response.data.length < 200) {
-//                     hasMoreRecords = false;
-//                 } else {
-//                     page++;
-//                 }
-//             } else {
-//                 hasMoreRecords = false;
-//             }
-
-//             // Add a small delay to prevent rate limiting
-//             await new Promise(resolve => setTimeout(resolve, 100));
-//         }
-
-//         // Filter for current month
-//         const monthlyRecords = allRecords.filter(record =>
-//             isCurrentMonth(record.Start_Date_of_Manufacturing)
-//         );
-
-//         paginationState.monthlyPurchaseOrders.data = monthlyRecords;
-//         displayRecords('monthlyPurchaseOrders', 'monthlypurchaseorder', 'monthlyPurchaseOrdersPagination');
-
-//     } catch (error) {
-//         console.error("Error fetching records:", error);
-//     }
-// }
 
 async function fetchRecords2() {
     const config5 = {
