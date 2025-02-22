@@ -166,3 +166,7 @@ Total records fetched: 750
 This allows you to fetch and display all records in your application, not just the first 200. The client-side pagination still works the same way, but now it has access to all the records instead of just the first 200.
 
 ### ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# Documentation
+
+` https://docs.google.com/document/d/1jqIcnAbN8BX1-41-TuvncPIU1avJE1JYPOZcq8CcACI/edit?usp=sharing `
