@@ -80,7 +80,7 @@ async function fetchChartData() {
             const response = await ZOHO.CREATOR.API.getAllRecords({
                 ...config6,
                 page: page,
-                pageSize: 200
+                // pageSize: 200
             });
 
             if (response && response.data && response.data.length > 0) {
@@ -191,7 +191,7 @@ ZOHO.CREATOR.init()
         await fetchRecords();
         await fetchRecords2();
         await fetchChartData();
-        initializeSearch();
+        initializeSearch()
 
         // First API call for Outward Quantity
         var config1 = {
@@ -297,7 +297,6 @@ async function fetchRecords() {
                 allRecords = [...allRecords, ...response.data];
                 console.log(`Fetched ${allRecords.length} records so far...`);
                 
-                // If we got less than 200 records, we've reached the end
                 if (response.data.length < 200) {
                     hasMoreRecords = false;
                 } else {
@@ -307,18 +306,63 @@ async function fetchRecords() {
                 hasMoreRecords = false;
             }
 
-            // Add a small delay to prevent rate limiting
             await new Promise(resolve => setTimeout(resolve, 100));
         }
 
         console.log("All purchase orders", allRecords);
-        paginationState.allPurchaseOrders.data = allRecords;
+        paginationState.allPurchaseOrders.originalData = allRecords; // Store original data
+        paginationState.allPurchaseOrders.data = allRecords; // Initial data for display
         displayRecords('allPurchaseOrders', 'purchaseTableBody', 'allPurchaseOrdersPagination');
 
     } catch (error) {
         console.error("Error fetching records:", error);
     }
 }
+
+// async function fetchRecords() {
+//     const config4 = {
+//         appName: "product-distribution",
+//         reportName: "All_Purchase_Orders"
+//     };
+
+//     try {
+//         let allRecords = [];
+//         let page = 1;
+//         let hasMoreRecords = true;
+
+//         while (hasMoreRecords) {
+//             const response = await ZOHO.CREATOR.API.getAllRecords({
+//                 ...config4,
+//                 page: page,
+//                 pageSize: 200
+//             });
+
+//             if (response && response.data && response.data.length > 0) {
+//                 allRecords = [...allRecords, ...response.data];
+//                 console.log(`Fetched ${allRecords.length} records so far...`);
+                
+//                 // If we got less than 200 records, we've reached the end
+//                 if (response.data.length < 200) {
+//                     hasMoreRecords = false;
+//                 } else {
+//                     page++;
+//                 }
+//             } else {
+//                 hasMoreRecords = false;
+//             }
+
+//             // Add a small delay to prevent rate limiting
+//             await new Promise(resolve => setTimeout(resolve, 100));
+//         }
+
+//         console.log("All purchase orders", allRecords);
+//         paginationState.allPurchaseOrders.data = allRecords;
+//         displayRecords('allPurchaseOrders', 'purchaseTableBody', 'allPurchaseOrdersPagination');
+
+//     } catch (error) {
+//         console.error("Error fetching records:", error);
+//     }
+// }
 
 
     ZOHO.CREATOR.API.getAllRecords(config4).then(function (response) {
@@ -405,6 +449,55 @@ function changePage(stateKey, tableId, paginationId, newPage) {
     }
 }
 
+// async function fetchRecords2() {
+//     const config5 = {
+//         appName: "product-distribution",
+//         reportName: "All_Purchase_Orders"
+//     };
+
+//     try {
+//         let allRecords = [];
+//         let page = 1;
+//         let hasMoreRecords = true;
+
+//         while (hasMoreRecords) {
+//             const response = await ZOHO.CREATOR.API.getAllRecords({
+//                 ...config5,
+//                 page: page,
+//                 pageSize: 200
+//             });
+
+//             if (response && response.data && response.data.length > 0) {
+//                 allRecords = [...allRecords, ...response.data];
+//                 console.log(`Fetched ${allRecords.length} monthly records so far...`);
+                
+//                 // If we got less than 200 records, we've reached the end
+//                 if (response.data.length < 200) {
+//                     hasMoreRecords = false;
+//                 } else {
+//                     page++;
+//                 }
+//             } else {
+//                 hasMoreRecords = false;
+//             }
+
+//             // Add a small delay to prevent rate limiting
+//             await new Promise(resolve => setTimeout(resolve, 100));
+//         }
+
+//         // Filter for current month
+//         const monthlyRecords = allRecords.filter(record =>
+//             isCurrentMonth(record.Start_Date_of_Manufacturing)
+//         );
+
+//         paginationState.monthlyPurchaseOrders.data = monthlyRecords;
+//         displayRecords('monthlyPurchaseOrders', 'monthlypurchaseorder', 'monthlyPurchaseOrdersPagination');
+
+//     } catch (error) {
+//         console.error("Error fetching records:", error);
+//     }
+// }
+
 async function fetchRecords2() {
     const config5 = {
         appName: "product-distribution",
@@ -427,7 +520,6 @@ async function fetchRecords2() {
                 allRecords = [...allRecords, ...response.data];
                 console.log(`Fetched ${allRecords.length} monthly records so far...`);
                 
-                // If we got less than 200 records, we've reached the end
                 if (response.data.length < 200) {
                     hasMoreRecords = false;
                 } else {
@@ -437,23 +529,21 @@ async function fetchRecords2() {
                 hasMoreRecords = false;
             }
 
-            // Add a small delay to prevent rate limiting
             await new Promise(resolve => setTimeout(resolve, 100));
         }
 
-        // Filter for current month
         const monthlyRecords = allRecords.filter(record =>
             isCurrentMonth(record.Start_Date_of_Manufacturing)
         );
 
-        paginationState.monthlyPurchaseOrders.data = monthlyRecords;
+        paginationState.monthlyPurchaseOrders.originalData = monthlyRecords; // Store original data
+        paginationState.monthlyPurchaseOrders.data = monthlyRecords; // Initial data for display
         displayRecords('monthlyPurchaseOrders', 'monthlypurchaseorder', 'monthlyPurchaseOrdersPagination');
 
     } catch (error) {
         console.error("Error fetching records:", error);
     }
 }
-
 
 function isCurrentMonth(dateString) {
     if (!dateString) return false;
@@ -462,6 +552,67 @@ function isCurrentMonth(dateString) {
     return (recordDate.getFullYear() === currentDate.getFullYear() &&
         recordDate.getMonth() === currentDate.getMonth());
 }
+
+
+function initializeSearch() {
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.querySelector('.search-btn');
+
+    if (!searchInput || !searchBtn) {
+        console.error('Search elements not found!');
+        return;
+    }
+
+    // Add event listener for search button click
+    searchBtn.addEventListener('click', performSearch);
+
+    // Add event listener for input changes (real-time search)
+    searchInput.addEventListener('input', performSearch);
+
+    // Add event listener for Enter key press
+    searchInput.addEventListener('keyup', (event) => {
+        if (event.key === 'Enter') {
+            performSearch();
+        }
+    });
+}
+
+function performSearch() {
+    const searchValue = document.getElementById('searchInput').value.toLowerCase().trim();
+
+    // Filter data for both tables
+    paginationState.allPurchaseOrders.data = paginationState.allPurchaseOrders.originalData.filter(record => {
+        return Object.values(record).some(value => 
+            String(value?.display_value || value).toLowerCase().includes(searchValue)
+        );
+    });
+
+    paginationState.monthlyPurchaseOrders.data = paginationState.monthlyPurchaseOrders.originalData.filter(record => {
+        return Object.values(record).some(value => 
+            String(value?.display_value || value).toLowerCase().includes(searchValue)
+        );
+    });
+
+    // Reset to page 1 for both tables after search
+    paginationState.allPurchaseOrders.currentPage = 1;
+    paginationState.monthlyPurchaseOrders.currentPage = 1;
+
+    // Redisplay records with filtered data
+    displayRecords('allPurchaseOrders', 'purchaseTableBody', 'allPurchaseOrdersPagination');
+    displayRecords('monthlyPurchaseOrders', 'monthlypurchaseorder', 'monthlyPurchaseOrdersPagination');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        initializeSearch(); // Initialize search functionality
+        updateChart({
+            labels: [],
+            data: []
+        });
+    } catch (error) {
+        console.error('Failed to initialize chart or search:', error);
+    }
+});
 
 
 // #########################################################################################################

@@ -109,33 +109,6 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     margin-bottom: 25px;
   }
-/* 
-.chart-title {
-    margin-bottom: 15px;
-    color: #333;
-}
-
-.bar-chart {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.bar-row {
-    display: flex;
-    align-items: center;
-}
-
-.bar-label {
-    width: 100px;
-    font-size: 14px;
-}
-
-.bar {
-    height: 20px;
-    background-color: #b5d4b5;
-    transition: width 0.3s ease;
-} */
 
 .table-grid {
     display: grid;
@@ -149,7 +122,7 @@ body {
     padding: 25px;
     border-radius: 4px;
     overflow: auto; /* Add scroll for overflow content */
-    max-height: 600px; /* Limit height */
+    max-height: 600px;
     position: relative;
 }
 
@@ -180,8 +153,6 @@ th {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
-    z-index: 10; */
 }
 
 .pagination-info {
@@ -215,22 +186,6 @@ th {
     margin: 0 10px;
     color: #666;
 }
-
-
-/* .pagination button {
-    padding: 5px 10px;
-    background-color: #4a5d4a;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.pagination button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-} */
-
 
 .loading-message {
     text-align: center;
