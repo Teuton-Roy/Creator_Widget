@@ -2,42 +2,45 @@
 let quantityChart = null;
 let paymentChart = null;
 
+//Pagination...
+let currentPage = 1;
+const recordsPerPage = 5;
+
 function populateTable(purchaseOrders) {
     try {
-        // Get table body reference
         const tbody = document.querySelector('#ordersTable tbody');
         if (!tbody) {
             console.error("Table body element not found!");
             return;
         }
 
-        // Clear existing table content
         tbody.innerHTML = '';
 
-        // Check if we have data
         if (!purchaseOrders || !Array.isArray(purchaseOrders) || purchaseOrders.length === 0) {
             console.log("No purchase orders to display");
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="7" style="text-align: center; padding: 20px;">
+                    <td colspan="8" style="text-align: center; padding: 20px;">
                         No records found
                     </td>
                 </tr>`;
+            updatePagination(purchaseOrders);
             return;
         }
 
-        // Log the data we're working with
         console.log("Populating table with data:", purchaseOrders);
 
-        // Create and append each row
-        purchaseOrders.forEach((order, index) => {
+        // Paginate the data
+        const startIndex = (currentPage - 1) * recordsPerPage;
+        const endIndex = startIndex + recordsPerPage;
+        const paginatedOrders = purchaseOrders.slice(startIndex, endIndex);
+
+        paginatedOrders.forEach((order, index) => {
             try {
                 console.log(`Processing order ${index}:`, order);
 
-                // Create new row
                 const row = document.createElement('tr');
 
-                // Get field names from your Zoho Creator form
                 const purchaseOrderNumber = order.Purchase_Order_Number || order.purchase_order_number || '-';
                 const gstin = order.GSTIN || order.GSTIN_Number || '-';
                 const manufacturerName = order.Manufacturer_Name.display_value || order.Manufacturer_Name || '-';
@@ -47,7 +50,6 @@ function populateTable(purchaseOrders) {
                 const endDate = order.End_Date || order.End_Date_of_Manufacturing || '-';
                 const currrntUser = order.Currrnt_User || order.Added_User || '-';
 
-                // Set row content
                 row.innerHTML = `
                     <td>${purchaseOrderNumber}</td>
                     <td>${gstin}</td>
@@ -59,10 +61,8 @@ function populateTable(purchaseOrders) {
                     <td>${formatDate(currrntUser)}</td>
                 `;
 
-                // Add row to table
                 tbody.appendChild(row);
 
-                // Log successful row creation
                 console.log(`Row ${index} created successfully`);
 
             } catch (err) {
@@ -75,28 +75,77 @@ function populateTable(purchaseOrders) {
         const rows = tbody.getElementsByTagName('tr');
         Array.from(rows).forEach(row => {
             row.addEventListener('click', function () {
-                // Toggle selected class
                 this.classList.toggle('selected');
             });
         });
 
-        // Log completion
-        console.log(`Table populated with ${purchaseOrders.length} records`);
+        console.log(`Table populated with ${paginatedOrders.length} records on page ${currentPage}`);
+        updatePagination(purchaseOrders);
 
     } catch (err) {
         console.error("Error in populateTable:", err);
-
-        // Show error in table
         const tbody = document.querySelector('#ordersTable tbody');
         if (tbody) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="7" style="text-align: center; padding: 20px; color: red;">
+                    <td colspan="8" style="text-align: center; padding: 20px; color: red;">
                         Error populating table: ${err.message}
                     </td>
                 </tr>`;
         }
     }
+}
+
+function updatePagination(purchaseOrders) {
+    const pagination = document.getElementById('pagination');
+    if (!pagination) {
+        console.error('Pagination element not found!');
+        return;
+    }
+
+    pagination.innerHTML = '';
+
+    const totalPages = Math.ceil(purchaseOrders.length / recordsPerPage);
+
+    if (totalPages <= 1) return; // No pagination needed if there's only one page
+
+    // Previous button
+    const prevButton = document.createElement('button');
+    prevButton.textContent = 'Previous';
+    prevButton.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            populateTable(purchaseOrders);
+        }
+    });
+    prevButton.disabled = currentPage === 1;
+    pagination.appendChild(prevButton);
+
+    // Page numbers
+    for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.addEventListener('click', () => {
+            currentPage = i;
+            populateTable(purchaseOrders);
+        });
+        if (i === currentPage) {
+            pageButton.style.backgroundColor = '#45a049'; // Highlight current page
+        }
+        pagination.appendChild(pageButton);
+    }
+
+    // Next button
+    const nextButton = document.createElement('button');
+    nextButton.textContent = 'Next';
+    nextButton.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            populateTable(purchaseOrders);
+        }
+    });
+    nextButton.disabled = currentPage === totalPages;
+    pagination.appendChild(nextButton);
 }
 
 // Helper function to format dates
@@ -121,21 +170,17 @@ function formatDate(dateString) {
 
 ZOHO.CREATOR.init()
     .then(function (data) {
-
         var queryParams = ZOHO.CREATOR.UTIL.getInitParams();
         console.log(queryParams);
 
         let login = queryParams.loginUser;
         console.log("Logged in user:", login);
 
-
         var configMetadata = {
             appName: "product-distribution",
             reportName: "All_Purchase_Orders",
         }
 
-
-        // Get all records
         ZOHO.CREATOR.API.getAllRecords(configMetadata)
             .then(function (response) {
                 console.log("Sample record structure:", response.data);
@@ -147,7 +192,6 @@ ZOHO.CREATOR.init()
                 }
 
                 return ZOHO.CREATOR.API.getAllRecords(config);
-                // return config
             })
             .then(function (response) {
                 console.log(response);
@@ -156,24 +200,23 @@ ZOHO.CREATOR.init()
                     console.log("Filtered records:", response.data);
                     populateTable(response.data);
                     createCharts(response.data);
-                    initializeSearch()
+                    initializeSearch();
                 } else {
                     clearCharts();
                     const tbody = document.querySelector('#ordersTable tbody');
                     tbody.innerHTML = `
                     <tr>
-                        <td colspan="7" style="text-align: center; padding: 20px;">No records found</td>
+                        <td colspan="8" style="text-align: center; padding: 20px;">No records found</td>
                     </tr>`;
                 }
             })
-
             .catch(function (error) {
                 console.error("Error:", error);
                 clearCharts();
                 const tbody = document.querySelector('#ordersTable tbody');
                 tbody.innerHTML = `
                 <tr>
-                    <td colspan="7" style="text-align: center; padding: 20px; color: red;">
+                    <td colspan="8" style="text-align: center; padding: 20px; color: red;">
                         Error loading data: ${error.message}
                     </td>
                 </tr>`;
