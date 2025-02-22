@@ -121,7 +121,7 @@ function formatDate(dateString) {
 
 ZOHO.CREATOR.init()
     .then(function (data) {
-        
+
         var queryParams = ZOHO.CREATOR.UTIL.getInitParams();
         console.log(queryParams);
 
@@ -134,7 +134,7 @@ ZOHO.CREATOR.init()
             reportName: "All_Purchase_Orders",
         }
 
-        
+
         // Get all records
         ZOHO.CREATOR.API.getAllRecords(configMetadata)
             .then(function (response) {
@@ -166,7 +166,7 @@ ZOHO.CREATOR.init()
                     </tr>`;
                 }
             })
-            
+
             .catch(function (error) {
                 console.error("Error:", error);
                 clearCharts();
@@ -543,9 +543,6 @@ function performSearch() {
         row.style.display = text.includes(searchValue) ? '' : 'none';
     });
 }
-
-
-
 
 function clearCharts() {
     if (quantityChart) {
