@@ -169,4 +169,4 @@ This allows you to fetch and display all records in your application, not just t
 
 # Documentation
 
-` https://docs.google.com/document/d/1jqIcnAbN8BX1-41-TuvncPIU1avJE1JYPOZcq8CcACI/edit?usp=sharing `
+` [Documents](https://docs.google.com/document/d/1jqIcnAbN8BX1-41-TuvncPIU1avJE1JYPOZcq8CcACI/edit?usp=sharing) `
